@@ -1,0 +1,423 @@
+/* --------------------------------------------------
+   Imports & Base Styles
+-------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+
+body {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  font-family: 'Open Sans', sans-serif;
+  font: 400 16px/1.5em "Open Sans", sans-serif;
+  transition: all 0.2s cubic-bezier(.25, .46, .45, .94);
+}
+
+/* --------------------------------------------------
+   Navbar Styles
+-------------------------------------------------- */
+.nav {
+  height: 60px;
+  width: 100%;
+  background-color: #fff;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.082);
+  z-index: 100;
+}
+.nav-header, .nav-title, .nav-links {
+  display: inline;
+}
+.nav-title {
+  color: #D70F64;
+  padding: 15px 15px 15px 5px;
+}
+.nav-btn {
+  display: none;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+.nav-links > a {
+  padding: 15px 30px 12px;
+  text-decoration: none;
+  color: #000;
+  font-weight: 600;
+  text-align: center;
+  border-left: 1px solid rgba(0, 0, 0, 0.082);
+}
+.nav-links > a:hover {
+  background-color: #ffecfc;
+  color: #D70F64;
+}
+.nav-icon {
+  font-size: 20px;
+  padding-right: 10px !important;
+  color: #D70F64;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Responsive Navbar */
+@media (max-width: 600px) {
+  .nav-btn {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .nav-btn > label {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    padding: 20px;
+  }
+  .nav-btn > label:hover,
+  #nav-check:checked ~ .nav-btn > label {
+    background-color: #ffecfc;
+  }
+  .nav-btn > label > span {
+    display: block;
+    width: 25px;
+    height: 10px;
+    border-top: 2px solid #D70F64;
+  }
+  .nav-links {
+    position: absolute;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff1fd;
+    height: 0;
+    top: 50px;
+    left: 0;
+    transition: all 0.3s ease-in;
+    overflow-y: hidden;
+  }
+  .nav-links > a {
+    width: 100%;
+  }
+  #nav-check:not(:checked) ~ .nav-links {
+    height: 0;
+  }
+  #nav-check:checked ~ .nav-links {
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+  }
+}
+
+/* --------------------------------------------------
+   Dropdowns (General & Navbar)
+-------------------------------------------------- */
+.dropdown, .dropdown-nav {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dropdown-content,
+.dropdown-content-nav {
+  position: absolute;
+  background-color: white;
+  right: 0;
+  z-index: 1;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+}
+
+.dropdown-content {
+  background-color: rgb(127, 72, 0);
+  margin-top: 40px;
+  min-width: 100px;
+}
+.dropdown-content-nav {
+  margin-top: 15px;
+  min-width: 150px;
+}
+
+.dropdown-content a,
+.dropdown-content-nav a {
+  padding: 12px 16px;
+  display: block;
+  text-decoration: none;
+  color: white;
+}
+.dropdown-content-nav a {
+  color: black;
+}
+.dropdown-content a:hover {
+  background-color: rgb(167, 120, 0);
+}
+.dropdown-content-nav a:hover {
+  background-color: rgba(245, 245, 245, 0.817);
+  color: #d70f62;
+}
+
+.dropdown:hover .dropdown-content,
+.dropdown-nav:hover .dropdown-content-nav {
+  max-height: 500px;
+}
+
+.dropbtn {
+  transition: 0.2s;
+}
+.dropdown:hover .dropbtn {
+  background-color: rgb(172, 112, 0);
+  border-bottom-left-radius: 25px;
+}
+
+.three-dot {
+  position: absolute;
+  padding: 10px;
+  right: 0;
+  background-color: rgba(213, 213, 213, 0.5);
+  border-bottom-left-radius: 30px;
+}
+
+/* --------------------------------------------------
+   Utilities
+-------------------------------------------------- */
+.shadow-remove:focus,
+.outline-remove:focus {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.form-outline input:focus {
+  border: none;
+  border-bottom: 1px solid black;
+  border-radius: 0;
+  transition: 0.4s ease-in-out;
+  box-shadow: none;
+}
+.borderradius-remove {
+  border-radius: 0 !important;
+}
+.addshadow {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* --------------------------------------------------
+   Buttons & Links
+-------------------------------------------------- */
+.button-style {
+  width: 100% !important;
+  background: #d70f62 !important;
+  border: #d70f62 !important;
+  height: 46px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700 !important;
+}
+.button-style:hover {
+  background: #c90e5c !important;
+}
+.link-style {
+  color: #d70f62 !important;
+  text-decoration: none;
+}
+.link-style:hover {
+  color: #c90e5c;
+}
+
+/* --------------------------------------------------
+   Card & Image Styling
+-------------------------------------------------- */
+.card {
+  border: none !important;
+  cursor: pointer;
+}
+.card-img-top {
+  width: 100% !important;
+  height: 180px;
+  object-fit: cover !important;
+  border-radius: 0px !important;
+}
+
+/* --------------------------------------------------
+   Cart Styling
+-------------------------------------------------- */
+.mainCart {
+  width: 28%;
+  position: sticky;
+  height: 500px;
+  background-color: white;
+  padding-top: 40px;
+  text-align: center;
+  box-shadow: -2px 5px 7px 1px rgba(0, 0, 0, 0.07);
+  float: right;
+  z-index: 1;
+}
+.cartItem {
+  overflow-y: scroll;
+  height: 100px;
+  background-color: #fffcfd;
+  font-size: 16px;
+}
+.cartItemname {
+  color: #d70f62;
+  font-weight: bold;
+}
+.checkout-btn {
+  padding: 10px !important;
+}
+.checkoutbtn-inner {
+  font-size: 14px !important;
+  padding: 12px !important;
+  border-radius: 0px !important;
+  background-color: #d70f62 !important;
+  border-color: #fff !important;
+}
+.checkoutbtn-inner:hover {
+  background-color: #c20c58 !important;
+}
+.fixed-checkout {
+  display: none;
+}
+@media screen and (max-width: 1000px) {
+  .mainCart {
+    display: none;
+  }
+  .fixed-checkout {
+    position: fixed;
+    bottom: 2px;
+    padding: 0 10px;
+    display: block;
+    z-index: 10;
+  }
+}
+
+/* --------------------------------------------------
+   Shop Info + Tabs + Responsive
+-------------------------------------------------- */
+.hero {
+  background-color: #ff3366;
+  background-image: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-content {
+  max-width: 800px; /* Restricts the width of content */
+  margin: 0 auto; /* Centers content horizontally */
+  padding: 20px; /* Adds padding around the text */
+}
+
+.hero-title {
+  font-size: 3rem; /* Adjust font size */
+  margin: 0;
+  padding: 10px;
+  font-weight: bold;
+  text-transform: uppercase; /* Makes the title uppercase */
+}
+
+.hero-description {
+  font-size: 1.5rem; /* Adjust font size */
+  margin: 10px 0;
+  font-weight: 300; /* Makes the description text lighter */
+  line-height: 1.5; /* Improves readability */
+}
+
+.hero-button {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  padding: 12px 25px;
+  border-radius: 30px;
+  background-color: #ff3366; /* Same pink as the header */
+  color: white;
+  border: none;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.hero-button:hover {
+  background-color: #ff66b2; /* Lighter pink on hover */
+}
+
+/* Cities & Services Cards */
+.cities .card,
+.services .card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cities .card-img-top,
+.services .card-img-top {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.card-title {
+  color: #ff3366;
+}
+
+/* Cities Section */
+.cities {
+  background-color: white;
+}
+
+/* Services Section */
+.services {
+  background-color: #f8f9fa;
+  color: white;
+}
+
+.services .card-body {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+
+.services .card-title,
+.services .card-text {
+  color: white;
+}
+
+/* Custom Service Card */
+.service-card {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: end;
+}
+
+.service-card .card-body {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 1rem;
+  border-radius: 0;
+}
+
+.service-card .card-title,
+.service-card .card-text {
+  color: white;
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  background-color: #343a40;
+  color: white;
+}
+
+footer p {
+  margin: 0;
+}

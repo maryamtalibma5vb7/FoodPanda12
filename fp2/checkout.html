@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout Page</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">🛒 Review Your Order</h2>
+    <div id="orderItems" class="row mb-4"></div>
+    <h4 class="mb-3">Order Details:</h4>
+    <div class="mb-3">
+      <label for="customerName" class="form-label">Your Name</label>
+      <input type="text" class="form-control" id="customerName" placeholder="John Doe" required />
+    </div>
+    <div class="mb-4">
+      <label for="deliveryAddress" class="form-label">Delivery Address</label>
+      <input type="text" class="form-control" id="deliveryAddress" placeholder="Street, City, ZIP" required />
+    </div>
+
+    <h4 class="mb-3">Select Payment Method</h4>
+    <select class="form-select mb-4" id="paymentMethod">
+      <option value="Hand to Hand">Cash on Delivery</option>
+      <option value="Online">Online Payment</option>
+    </select>
+
+    <div id="onlinePaymentOptions" class="mb-4" style="display: none;">
+      <label class="form-label">Choose Bank</label>
+      <select class="form-select mb-3" id="bankSelect">
+        <option disabled selected>Select your bank</option>
+        <option value="HBL">HBL</option>
+        <option value="Meezan">Meezan</option>
+        <option value="UBL">UBL</option>
+        <option value="Bank Alfalah">Bank Alfalah</option>
+      </select>
+
+      <label class="form-label">Card Number</label>
+      <input type="text" class="form-control mb-2" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label">Expiry Date</label>
+          <input type="text" class="form-control mb-2" id="expiry" placeholder="MM/YY" maxlength="5" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">CVV</label>
+          <input type="password" class="form-control mb-2" id="cvv" placeholder="123" maxlength="3" />
+        </div>
+      </div>
+
+      <!-- <div class="text-end mt-2">
+        <button class="btn btn-primary" onclick="payOnline()">Pay Now</button>
+      </div> -->
+    </div>
+
+    <!-- <div class="mb-3">
+      <label for="customerName" class="form-label">Your Name</label>
+      <input type="text" class="form-control" id="customerName" placeholder="John Doe" required />
+    </div>
+
+    <div class="mb-4">
+      <label for="deliveryAddress" class="form-label">Delivery Address</label>
+      <input type="text" class="form-control" id="deliveryAddress" placeholder="Street, City, ZIP" required />
+    </div> -->
+    <div class="text-end mt-2">
+      <button class="btn btn-primary" onclick="payOnline()">Pay Now</button>
+    </div>
+    <div class="text-end">
+      <button class="btn btn-success px-4" onclick="placeOrder()">Place Order</button>
+    </div>
+    
+  </div>
+
+  <!-- Firebase Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, where, updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  
+    const firebaseConfig = {
+  apiKey: "AIzaSyBbrt0Wb9NIDajEbm151QNAFp_eZ0LnO6Y",
+  authDomain: "food-2868c.firebaseapp.com",
+  projectId: "food-2868c",
+  storageBucket: "food-2868c.appspot.com",
+  messagingSenderId: "925211173677",
+  appId: "1:925211173677:web:4038daee9180d9121b69a4",
+  measurementId: "G-YY73WWGYQC"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+  
+    let currentUser = null;
+    let paymentCompleted = false;
+  
+    // Wait until Firebase Auth detects the user
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        renderCheckoutCart();
+      } else {
+        Swal.fire("Login Required", "Please login to continue.", "warning").then(() => {
+          window.location.href = "login.html";
+        });
+      }
+    });
+  
+    // Payment method change handler
+    document.addEventListener("DOMContentLoaded", () => {
+      const paymentMethod = document.getElementById("paymentMethod");
+      if (paymentMethod) {
+        paymentMethod.addEventListener("change", () => {
+          const isOnline = paymentMethod.value === "Online";
+          document.getElementById("onlinePaymentOptions").style.display = isOnline ? "block" : "none";
+          paymentCompleted = !isOnline; // reset if online selected
+        });
+      }
+    });
+  
+    // Render cart
+    window.renderCheckoutCart = async function () {
+      const q = query(collection(db, "Carts"), where("uid", "==", currentUser.uid));
+      const snapshot = await getDocs(q);
+      const orderContainer = document.getElementById("orderItems");
+      orderContainer.innerHTML = "";
+  
+      let total = 0;
+  
+      snapshot.forEach((docSnap) => {
+        const item = docSnap.data();
+        const id = docSnap.id;
+        const qty = item.Quantity || 1;
+        const subtotal = parseFloat(item.price) * qty;
+        total += subtotal;
+  
+        orderContainer.innerHTML += `
+          <div class="col-md-4">
+            <div class="card shadow-sm mb-4 text-center">
+              <img src="${item.image}" class="card-img-top" style="height: 150px; object-fit: cover;" />
+              <div class="card-body">
+                <h5 class="card-title">${item.name}</h5>
+                <p><strong>Price:</strong> Rs. ${item.price}</p>
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                  <label class="me-2 fw-semibold mb-0">Quantity:</label>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${id}', ${qty - 1})">−</button>
+                  <span class="mx-2">${qty}</span>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${id}', ${qty + 1})">+</button>
+                </div>
+                <p><strong>Subtotal:</strong> Rs. ${(subtotal).toFixed(2)}</p>
+                <button class="btn btn-sm btn-danger mt-2" onclick="confirmDelete('${id}')">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+  
+      if (total > 0) {
+        orderContainer.innerHTML += `
+          <div class="col-12 text-end">
+            <h4 class="mt-3"><strong>Total:</strong> Rs. ${total.toFixed(2)}</h4>
+          </div>
+        `;
+      } else {
+        orderContainer.innerHTML = "<p class='text-center text-danger'>Your cart is empty.</p>";
+      }
+    };
+  
+    // Quantity update
+    window.updateQuantity = async function (id, qty) {
+      if (qty < 1) return confirmDelete(id);
+      await updateDoc(doc(db, "Carts", id), { Quantity: qty });
+      renderCheckoutCart();
+    };
+  
+    // Confirm delete
+    window.confirmDelete = async function (id) {
+      const confirm = await Swal.fire({
+        title: "Remove item?",
+        text: "Do you really want to remove this item?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!"
+      });
+  
+      if (confirm.isConfirmed) {
+        await deleteDoc(doc(db, "Carts", id));
+        Swal.fire("Deleted!", "Item removed from cart.", "success");
+        renderCheckoutCart();
+      }
+    };
+  
+    // Payment
+    window.payOnline = async function () {
+      const bank = document.getElementById("bankSelect").value;
+      const card = document.getElementById("cardNumber").value.trim();
+      const expiry = document.getElementById("expiry").value.trim();
+      const cvv = document.getElementById("cvv").value.trim();
+  
+      if (!bank || !card || !expiry || !cvv) {
+        return Swal.fire("Incomplete Info", "Please fill out all payment fields.", "warning");
+      }
+  
+      if (card.length !== 19 || !card.match(/^(\d{4}\s){3}\d{4}$/)) {
+        return Swal.fire("Invalid Card", "Card must be in format: 1234 5678 9012 3456", "error");
+      }
+  
+      if (!expiry.match(/^(0[1-9]|1[0-2])\/\d{2}$/)) {
+        return Swal.fire("Invalid Expiry", "Use MM/YY format.", "error");
+      }
+  
+      if (cvv.length !== 3 || isNaN(cvv)) {
+        return Swal.fire("Invalid CVV", "CVV must be 3 digits.", "error");
+      }
+  
+      await Swal.fire({ title: "Processing...", timer: 2000, icon: "info", showConfirmButton: false });
+      Swal.fire("Success", "Payment completed!", "success");
+      paymentCompleted = true;
+    };
+  
+    // Place order
+    window.placeOrder = async function () {
+      const name = document.getElementById("customerName").value.trim();
+      const address = document.getElementById("deliveryAddress").value.trim();
+      const paymentMethod = document.getElementById("paymentMethod").value;
+  
+      if (!name || !address) {
+        return Swal.fire("Missing Info", "Please enter name and address.", "warning");
+      }
+  
+      if (paymentMethod === "Online" && !paymentCompleted) {
+        return Swal.fire("Payment Required", "Please complete payment first.", "warning");
+      }
+  
+      const q = query(collection(db, "Carts"), where("uid", "==", currentUser.uid));
+      const snapshot = await getDocs(q);
+  
+      if (snapshot.empty) {
+        return Swal.fire("Cart Empty", "Add something before ordering.", "info");
+      }
+  
+      for (const docSnap of snapshot.docs) {
+        const item = docSnap.data();
+        await addDoc(collection(db, "Orders"), {
+          ...item,
+          customer: name,
+          address,
+          paymentMethod,
+          status: "pending",
+          orderTime: new Date().toISOString()
+        });
+        await deleteDoc(doc(db, "Carts", docSnap.id));
+      }
+  
+      Swal.fire("Order Placed!", "Your order is on the way!", "success").then(() => {
+        window.location.href = "userDashboard.html";
+      });
+    };
+  </script>
+  
+</body>
+</html>

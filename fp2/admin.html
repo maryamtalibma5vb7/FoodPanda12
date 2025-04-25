@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body style="background-image: url('https://images.creativemarket.com/0.1.0/ps/4833749/1820/1213/m1/fpnw/wm1/wbqwlmk8mlit5kyyjpb0oeujbpxl7cdhdsl5x2gpo2chgdpuw1ulo22kdnnhhl76-.jpg'); background-size: cover;">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Admin Dashboard</a>
+      <button class="btn btn-outline-light" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </nav>
+
+  <center class="text-white my-4">
+    <h1>Welcome, Admin</h1>
+    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addProductModal">+ Add Product</button>
+  </center>
+
+  <!-- Modal for Add/Edit Product -->
+  <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Product Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="productIdEdit" />
+          <div class="mb-3">
+            <label>Product Name</label>
+            <input type="text" class="form-control" id="p-name" />
+          </div>
+          <div class="mb-3">
+            <label>Description</label>
+            <input type="text" class="form-control" id="p-desc" />
+          </div>
+          <div class="mb-3">
+            <label>Price</label>
+            <input type="text" class="form-control" id="p-price" />
+          </div>
+          <div class="mb-3">
+            <label>Image URL</label>
+            <input type="text" class="form-control" id="p-img" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" onclick="saveProduct()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Display -->
+  <div class="container mt-4">
+    <div class="row" id="product-list"></div>
+  </div>
+
+
+
+  <script type="module" src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
